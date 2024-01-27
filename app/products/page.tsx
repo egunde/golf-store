@@ -11,17 +11,15 @@ const getProducts = async () => {
     }
 };
 
-export default async function Home() {
+export default async function ProductPage() {
     const products = await getProducts();
     const productCards = products?.map((product, index) => (
         <ProductCard key={index} product={product} />
     ));
 
     return (
-        <div>
-            <div className="flex flex-col md:flex-row justify-center gap-2">
-                {productCards}
-            </div>
+        <div className="flex flex-col md:flex-row md:justify-center gap-2">
+            {productCards}
         </div>
     );
 }
