@@ -15,6 +15,7 @@ import CartItem from "./CartItem";
 import CartLoading from "./CartLoading";
 import CartSkeleton from "./CartSkeleton";
 import { formatCurrency } from "@/utilities/currency";
+import Logo from "../Logo";
 
 export default function Cart() {
     const pathname = usePathname();
@@ -125,8 +126,10 @@ export default function Cart() {
         <div className="z-50">
             <CartBackdrop />
             <div className="overflow-auto fixed right-0 top-0 w-full sm:w-3/4 md:w-2/4 2xl:w-1/4 p-4 h-screen bg-slate-900 shadow-lg text-gray-50">
-                <div className="flex justify-between">
-                    <p>Your Cart:</p>
+                <div className="flex justify-between px-2 mb-2">
+                    <Link href="/">
+                        <Logo height="50" />
+                    </Link>
                     <Link
                         href={pathname}
                         className="text-white font-bold py-2 px-4 border border-white hover:bg-white hover:text-black transition-colors"
