@@ -8,17 +8,6 @@ import Image from 'next/image'
 import { getStoredCart, saveStoredCart } from "@/utilities/cart";
 import ProductDetailSkeleton from "@/components/ProductDetailSkeleton";
 
-export async function getProduct(handle: string) {
-    try {
-        const product = await getProductByHandle(handle);
-        console.log(product)
-        return product;
-    } catch (error) {
-        console.error("Error fetching product:", error);
-        return null;
-    }
-}
-
 export default function ProductPage() {
     const handle = usePathname().substring(10);
     const [product, setProduct] = useState<Product | null>(null);
