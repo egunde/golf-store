@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
     const params = searchParams || {};
     return (
-        <html lang="en">
+        <html lang="en" className="h-full">
             <body className={akshar.className}>
                 <Navbar />
                 {children}
