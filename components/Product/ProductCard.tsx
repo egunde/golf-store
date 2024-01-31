@@ -141,7 +141,7 @@ export default function ProductCard(props: { product: Product }) {
                                 <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
                             </svg>
                         </button>
-                        <div className="flex w-1/4 items-center border border-sand divide-x divide-sand dark:text-gray-50">
+                        <div className="flex w-1/4 items-center border border-sand divide-x divide-sand text-gray-50">
                             <button
                                 onClick={() => handleQuantityChange(-1)}
                                 className="w-full h-full focus:outline-none hover:bg-slate-700 "
@@ -179,7 +179,7 @@ export default function ProductCard(props: { product: Product }) {
                 ) : (
                     <>
                         <div className="flex grow"></div>
-                        <div className="flex w-1/4 items-center border border-sand divide-x divide-sand">
+                        <div className="flex w-1/4 items-center border border-sand divide-x divide-sand text-gray-50">
                             <button
                                 onClick={() => handleQuantityChange(-1)}
                                 className="w-full h-full focus:outline-none hover:bg-slate-700 "
