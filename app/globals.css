@@ -20,7 +20,8 @@ body {
     color: rgb(var(--foreground-rgb));
     background-image: 
         url('/topography.svg'),
-        repeating-radial-gradient(farthest-corner at 100px 40px, #196626, #255824, #314922);
+        repeating-radial-gradient(farthest-corner at 50vh 10vh, #49a141, #196626, #255824, #314922);
+    background-attachment: fixed;
 }
 
 @layer base {
