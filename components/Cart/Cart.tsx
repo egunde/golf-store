@@ -192,6 +192,12 @@ export default function Cart() {
                             just the word "Checkout." where the . is a hole on 
                             green with a flag in it */}
                         </div>
+
+                        <p className="text-sm">
+                            To checkout, you will need to enter a password:
+                            colorstrike. After that, you can return to this site
+                            and the checkout button will redirect to your checkout page.
+                        </p>
                     </div>
                 )}
             </div>

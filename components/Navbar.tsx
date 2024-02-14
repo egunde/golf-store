@@ -4,6 +4,7 @@ import { useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import Cart from "./Cart/Cart";
 import Logo from "./Logo";
+import CartIcon from "./CartIcon";
 
 export default function Navbar() {
     const searchParams = useSearchParams();
@@ -20,7 +21,7 @@ export default function Navbar() {
                 className="w-1/3"
             />
             <Link href={cartLinkHref}>
-                Cart
+                <CartIcon />
             </Link>
             {showCart && <Cart />}
         </nav>
