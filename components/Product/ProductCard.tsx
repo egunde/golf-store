@@ -1,7 +1,7 @@
 "use client";
-import { getStoredCart, saveStoredCart } from "@/utilities/cart";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import VariantCard from "./VariantCard";
+import { getStoredCart, saveStoredCart } from "@/utilities/hooks/cart";
 
 export default function ProductCard(props: { product: Product }) {
     const [cartUpdateCount, setCartUpdateCount] = useState(0); //used to call useEffect

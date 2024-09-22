@@ -1,126 +1,47 @@
-"use client";
-import { getStoredCart } from "@/utilities/cart";
-import {
-    addCartItem,
-    createCartWithItems,
-    getCartById,
-    removeCartItem,
-    updateCartItem,
-} from "@/utilities/shopify";
-import CartBackdrop from "./CartBackdrop";
-import { useEffect, useState } from "react";
+import { useEffect, useCallback } from "react";
+import { formatCurrency } from "@/utilities/currency";
+import useCart, { getStoredCart } from "@/utilities/hooks/cart";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Logo from "../Logo";
+import CartBackdrop from "./CartBackdrop";
 import CartItem from "./CartItem";
 import CartLoading from "./CartLoading";
 import CartSkeleton from "./CartSkeleton";
-import { formatCurrency } from "@/utilities/currency";
-import Logo from "../Logo";
+import debounce from "@/utilities/debounce";
 
 export default function Cart() {
     const pathname = usePathname();
-    const [cart, setCart] = useState<Cart>();
-    const [refreshCounter, setRefreshCounter] = useState(0); //used as a callback to refresh on update/remove
-    const [isLoading, setIsLoading] = useState(false);
-    const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(false);
+    const {
+        cart,
+        isLoading,
+        isCheckoutDisabled,
+        setIsCheckoutDisabled,
+        setRefreshCounter,
+    } = useCart();
 
-    useEffect(() => {
-        setIsLoading(true);
-        const fetchCart = async () => {
-            const id = localStorage.getItem("cartId")
-                ? localStorage.getItem("cartId")
-                : null;
-            const items: StoredCart = getStoredCart();
-            try {
-                const response = id
-                    ? await getCartById(id)
-                    : await createCartWithItems(items);
-                localStorage.setItem("cartId", JSON.stringify(response.id));
-                updateItems(response);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        //Syncs storedCart with Shopify cart
-        const updateItems = async (cart: Cart) => {
-            //Retrieve necessary data
-            const items: StoredCart = getStoredCart();
-            const itemIds = items.map((item) => item.merchandiseId);
-            const cartIds = cart.lines.nodes.map((node) => node.merchandise.id);
-
-            //Filter unchanged items
-            const itemsToRemove = cartIds.filter((id) => !itemIds.includes(id));
-            const itemsToUpdate = itemIds.filter((id) => cartIds.includes(id));
-            const itemsToAdd = itemIds.filter((id) => !cartIds.includes(id));
-
-            let updatedCart: Cart = cart;
-            //Form and execute queries
-            if (itemsToRemove) {
-                const removeItems: string[] = cart.lines.nodes
-                    .filter((node) =>
-                        itemsToRemove.includes(node.merchandise.id)
-                    )
-                    .map((node) => node.id);
-
-                updatedCart = await removeCartItem(cart.id, removeItems);
-            }
-            if (itemsToUpdate) {
-                const updateItems: CartUpdateItem[] = cart.lines.nodes
-                    .filter((node) =>
-                        itemsToUpdate.includes(node.merchandise.id)
-                    )
-                    .map((node) => {
-                        const item = items.find(
-                            (item) => item.merchandiseId === node.merchandise.id
-                        );
-                        return {
-                            id: node.id,
-                            merchandiseId: node.merchandise.id,
-                            quantity: item ? item.quantity : node.quantity,
-                        };
-                    });
-
-                updatedCart = await updateCartItem(cart.id, updateItems);
-            }
-            if (itemsToAdd) {
-                const addItems: CartAddItem[] = items
-                    .filter((item) => itemsToAdd.includes(item.merchandiseId))
-                    .map((item) => ({
-                        merchandiseId: item.merchandiseId,
-                        quantity: item.quantity,
-                    }));
-
-                updatedCart = await addCartItem(cart.id, addItems);
-            }
-            setCart(updatedCart);
-            setIsLoading(false);
-            setIsCheckoutDisabled(false);
-        };
-
-        fetchCart();
-    }, [refreshCounter]);
-
-    const refreshCart = () => {
+    const refreshCart = useCallback(() => {
         setRefreshCounter((c) => c + 1);
-    };
+    }, [setRefreshCounter]);
 
-    const handleQuantityChange = () => {
+    const handleQuantityChange = useCallback(() => {
         setIsCheckoutDisabled(true);
-    };
+        const debouncedFunction = debounce(() => {
+            refreshCart();
+            setIsCheckoutDisabled(false);
+        }, 1000);
+        debouncedFunction();
+    }, [refreshCart, setIsCheckoutDisabled]);
 
-    //need to make these scrollable
-    const cartItems = cart?.lines.nodes.map((item, index) => {
-        return (
-            <CartItem
-                key={index}
-                cartId={cart.id}
-                item={item}
-                refreshCart={refreshCart}
-                handleChange={handleQuantityChange}
-            />
-        );
-    });
+    const cartItems = cart?.lines.nodes.map((item, index) => (
+        <CartItem
+            key={index}
+            cartId={cart.id}
+            item={item}
+            refreshCart={refreshCart}
+            handleChange={handleQuantityChange}
+        />
+    ));
 
     return (
         <div className="z-50">
@@ -169,13 +90,11 @@ export default function Cart() {
                             ) : (
                                 <Link
                                     href={cart.checkoutUrl}
-                                    className={`font-bold py-2 px-4 border transition-colors
-                                        ${
-                                            isCheckoutDisabled
-                                                ? `text-gray-500 border-gray-500`
-                                                : `text-greens-light border-greens-light hover:bg-greens-light hover:text-gray-50`
-                                        }
-                                    `}
+                                    className={`font-bold py-2 px-4 border transition-colors ${
+                                        isCheckoutDisabled
+                                            ? "text-gray-500 border-gray-500"
+                                            : "text-greens-light border-greens-light hover:bg-greens-light hover:text-gray-50"
+                                    }`}
                                     tabIndex={
                                         isCheckoutDisabled ? -1 : undefined
                                     }
@@ -188,15 +107,13 @@ export default function Cart() {
                                     Checkout
                                 </Link>
                             )}
-                            {/* could make a really cool checkout button that shows
-                            just the word "Checkout." where the . is a hole on 
-                            green with a flag in it */}
                         </div>
 
                         <p className="text-sm">
                             To checkout, you will need to enter a password:
                             colorstrike. After that, you can return to this site
-                            and the checkout button will redirect to your checkout page.
+                            and the checkout button will redirect to your
+                            checkout page.
                         </p>
                     </div>
                 )}

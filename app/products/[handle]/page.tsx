@@ -5,8 +5,8 @@ import { getProductByHandle } from "@/utilities/shopify";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from 'next/image'
-import { getStoredCart, saveStoredCart } from "@/utilities/cart";
 import ProductDetailSkeleton from "@/components/ProductDetailSkeleton";
+import { getStoredCart, saveStoredCart } from "@/utilities/hooks/cart";
 
 export default function ProductPage() {
     const handle = usePathname().substring(10);
@@ -49,9 +49,7 @@ export default function ProductPage() {
     }, [cartUpdateCount, selectedVariant])
 
     if (!product || !selectedVariant || isLoading) {
-        return (
-            <ProductDetailSkeleton />
-        );
+        return <ProductDetailSkeleton />;
     }
 
     const handleSelection = (color: string) => {
@@ -116,7 +114,6 @@ export default function ProductPage() {
         setCartUpdateCount(cartUpdateCount + 1);
     };
 
-    //would be a good idea to redo this in two components for mobile and desktop
     return (
         <div className="max-w-6xl px-4 py-4 mx-auto lg:py-8 md:px-6">
             <div className="flex flex-wrap -mx-4">
@@ -130,40 +127,6 @@ export default function ProductPage() {
                                 height={500}
                                 alt={selectedVariant.title}
                             />
-                        </div>
-                        <div className="flex-wrap hidden md:flex ">
-                            <div className="w-1/2 p-2 sm:w-1/4">
-                                <a
-                                    href="#"
-                                    className="block border border-blue-300 hover:border-blue-300"
-                                >
-                                    <p>Image 1</p>
-                                </a>
-                            </div>
-                            <div className="w-1/2 p-2 sm:w-1/4">
-                                <a
-                                    href="#"
-                                    className="block border border-transparent hover:border-blue-300"
-                                >
-                                    <p>Image 2</p>
-                                </a>
-                            </div>
-                            <div className="w-1/2 p-2 sm:w-1/4">
-                                <a
-                                    href="#"
-                                    className="block border border-transparent hover:border-blue-300"
-                                >
-                                    <p>Image 3</p>
-                                </a>
-                            </div>
-                            <div className="w-1/2 p-2 sm:w-1/4">
-                                <a
-                                    href="#"
-                                    className="block border border-transparent hover:border-blue-300"
-                                >
-                                    <p>Image 4</p>
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
